@@ -1,7 +1,7 @@
-// ✅ FINAL CLEAN WORKING script.js
+// ✅ FINAL FULL script.js — everything inside ONE DOMContentLoaded
 
 document.addEventListener('DOMContentLoaded', function() {
-  // ✅ Resume Download Button
+  // ✅ Resume Download
   const downloadBtn = document.getElementById('download-resume');
   if (downloadBtn) {
     downloadBtn.addEventListener('click', function() {
@@ -12,46 +12,84 @@ document.addEventListener('DOMContentLoaded', function() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      alert('Resume download started!');
+      showToast('Resume download started!', 'success');
     });
   }
 
-  // ✅ Mobile Menu Toggle
+  // ✅ Contact Form
+  const contactForm = document.getElementById('contact-form');
+  if (contactForm) {
+    contactForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const name = formData.get('name');
+      const email = formData.get('email');
+      const message = formData.get('message');
+      if (!name || !email || !message) {
+        showToast('Please fill in all fields', 'error');
+        return;
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showToast('Please enter a valid email address', 'error');
+        return;
+      }
+      const submitBtn = this.querySelector('.form-submit');
+      const originalText = submitBtn.textContent;
+      submitBtn.textContent = 'Sending...';
+      submitBtn.disabled = true;
+      setTimeout(() => {
+        showToast('Message sent successfully! Thank you for reaching out.', 'success');
+        this.reset();
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+      }, 1000);
+    });
+  }
+
+  // ✅ Mobile Menu
   const mobileMenuBtn = document.getElementById('mobile-menu-btn');
   const mobileMenu = document.getElementById('mobile-menu');
   const navigation = document.getElementById('navigation');
 
-  mobileMenuBtn.addEventListener('click', function() {
-    mobileMenu.classList.toggle('hidden');
-    const hamburgers = mobileMenuBtn.querySelectorAll('.hamburger');
-    hamburgers.forEach((line, index) => {
-      if (mobileMenu.classList.contains('hidden')) {
-        line.style.transform = 'rotate(0deg)';
-        line.style.opacity = '1';
-      } else {
-        if (index === 0) line.style.transform = 'rotate(45deg) translate(5px, 5px)';
-        if (index === 1) line.style.opacity = '0';
-        if (index === 2) line.style.transform = 'rotate(-45deg) translate(7px, -6px)';
-      }
-    });
-  });
-
-  const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
-  mobileNavLinks.forEach(link => {
-    link.addEventListener('click', function() {
-      mobileMenu.classList.add('hidden');
+  if (mobileMenuBtn && mobileMenu) {
+    mobileMenuBtn.addEventListener('click', function() {
+      mobileMenu.classList.toggle('hidden');
       const hamburgers = mobileMenuBtn.querySelectorAll('.hamburger');
-      hamburgers.forEach(line => {
-        line.style.transform = 'rotate(0deg)';
-        line.style.opacity = '1';
+      hamburgers.forEach((line, index) => {
+        if (mobileMenu.classList.contains('hidden')) {
+          line.style.transform = 'rotate(0deg)';
+          line.style.opacity = '1';
+        } else {
+          if (index === 0) line.style.transform = 'rotate(45deg) translate(5px, 5px)';
+          if (index === 1) line.style.opacity = '0';
+          if (index === 2) line.style.transform = 'rotate(-45deg) translate(7px, -6px)';
+        }
       });
     });
-  });
 
+    const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+    mobileNavLinks.forEach(link => {
+      link.addEventListener('click', function() {
+        mobileMenu.classList.add('hidden');
+        const hamburgers = mobileMenuBtn.querySelectorAll('.hamburger');
+        hamburgers.forEach(line => {
+          line.style.transform = 'rotate(0deg)';
+          line.style.opacity = '1';
+        });
+      });
+    });
+  }
+
+  // ✅ Nav scroll effect
   window.addEventListener('scroll', function() {
-    navigation.style.background = window.scrollY > 50 ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.9)';
+    if (window.scrollY > 50) {
+      navigation.style.background = 'rgba(255, 255, 255, 0.95)';
+    } else {
+      navigation.style.background = 'rgba(255, 255, 255, 0.9)';
+    }
   });
 
+  // ✅ Smooth scrolling for nav links
   const navLinks = document.querySelectorAll('.nav-link, .mobile-nav-link');
   navLinks.forEach(link => {
     link.addEventListener('click', function(e) {
@@ -59,12 +97,18 @@ document.addEventListener('DOMContentLoaded', function() {
       const targetId = this.getAttribute('href').substring(1);
       const targetElement = document.getElementById(targetId);
       if (targetElement) {
-        const offset = targetElement.getBoundingClientRect().top + window.pageYOffset - 80;
-        window.scrollTo({ top: offset, behavior: 'smooth' });
+        const headerOffset = 80;
+        const elementPosition = targetElement.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
       }
     });
   });
 
+  // ✅ Smooth scroll for hero buttons
   const heroButtons = document.querySelectorAll('.hero-buttons a');
   heroButtons.forEach(button => {
     button.addEventListener('click', function(e) {
@@ -73,15 +117,25 @@ document.addEventListener('DOMContentLoaded', function() {
         const targetId = this.getAttribute('href').substring(1);
         const targetElement = document.getElementById(targetId);
         if (targetElement) {
-          const offset = targetElement.getBoundingClientRect().top + window.pageYOffset - 80;
-          window.scrollTo({ top: offset, behavior: 'smooth' });
+          const headerOffset = 80;
+          const elementPosition = targetElement.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
         }
       }
     });
   });
 
-  const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
-  const observer = new IntersectionObserver(entries => {
+  // ✅ Intersection Observer
+  const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+  };
+
+  const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('visible');
@@ -89,7 +143,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }, observerOptions);
 
-  document.querySelectorAll('.section-header').forEach(header => {
+  const sectionHeaders = document.querySelectorAll('.section-header');
+  sectionHeaders.forEach(header => {
     header.classList.add('fade-in');
     observer.observe(header);
   });
@@ -105,54 +160,78 @@ document.addEventListener('DOMContentLoaded', function() {
     observer.observe(aboutImage);
   }
 
-  document.querySelectorAll('.timeline-item').forEach((item, i) => {
+  const timelineItems = document.querySelectorAll('.timeline-item');
+  timelineItems.forEach((item, index) => {
     item.classList.add('fade-in');
-    item.style.transitionDelay = `${i * 0.2}s`;
+    item.style.transitionDelay = `${index * 0.2}s`;
     observer.observe(item);
   });
 
-  document.querySelectorAll('.project-card').forEach((card, i) => {
+  const projectCards = document.querySelectorAll('.project-card');
+  projectCards.forEach((card, index) => {
     card.classList.add('fade-in');
-    card.style.transitionDelay = `${i * 0.2}s`;
+    card.style.transitionDelay = `${index * 0.2}s`;
     observer.observe(card);
   });
 
-  document.querySelectorAll('.skill-category').forEach((cat, i) => {
-    cat.classList.add('fade-in');
-    cat.style.transitionDelay = `${i * 0.1}s`;
-    observer.observe(cat);
+  const skillCategories = document.querySelectorAll('.skill-category');
+  skillCategories.forEach((category, index) => {
+    category.classList.add('fade-in');
+    category.style.transitionDelay = `${index * 0.1}s`;
+    observer.observe(category);
   });
 
-  document.querySelectorAll('.certification-card').forEach((card, i) => {
+  const certificationCards = document.querySelectorAll('.certification-card');
+  certificationCards.forEach((card, index) => {
     card.classList.add('fade-in');
-    card.style.transitionDelay = `${i * 0.1}s`;
+    card.style.transitionDelay = `${index * 0.1}s`;
     observer.observe(card);
   });
 
   const contactInfo = document.querySelector('.contact-info');
-  const contactForm = document.querySelector('.contact-form-container');
+  const contactFormContainer = document.querySelector('.contact-form-container');
   if (contactInfo) {
     contactInfo.classList.add('slide-in-left');
     observer.observe(contactInfo);
   }
-  if (contactForm) {
-    contactForm.classList.add('slide-in-right');
-    observer.observe(contactForm);
+  if (contactFormContainer) {
+    contactFormContainer.classList.add('slide-in-right');
+    observer.observe(contactFormContainer);
   }
 
-  document.querySelectorAll('.project-card, .skill-category, .certification-card').forEach(card => {
-    card.addEventListener('mouseenter', () => card.style.transform = 'translateY(-8px)');
-    card.addEventListener('mouseleave', () => card.style.transform = 'translateY(0)');
+  // ✅ Card hover
+  const cards = document.querySelectorAll('.project-card, .skill-category, .certification-card');
+  cards.forEach(card => {
+    card.addEventListener('mouseenter', function() {
+      this.style.transform = 'translateY(-8px)';
+    });
+    card.addEventListener('mouseleave', function() {
+      this.style.transform = 'translateY(0)';
+    });
   });
 
+  // ✅ Scroll progress
   const progressBar = document.createElement('div');
-  progressBar.style.cssText = 'position:fixed;top:0;left:0;width:0%;height:3px;background:linear-gradient(90deg,#3b82f6,#1e40af);z-index:9999;transition:width 0.1s ease;';
+  progressBar.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 3px;
+    background: linear-gradient(90deg, #3b82f6, #1e40af);
+    z-index: 9999;
+    transition: width 0.1s ease;
+  `;
   document.body.appendChild(progressBar);
-  window.addEventListener('scroll', () => {
-    const percent = (window.pageYOffset / (document.body.scrollHeight - window.innerHeight)) * 100;
-    progressBar.style.width = percent + '%';
+
+  window.addEventListener('scroll', function() {
+    const scrollTop = window.pageYOffset;
+    const docHeight = document.body.scrollHeight - window.innerHeight;
+    const scrollPercent = (scrollTop / docHeight) * 100;
+    progressBar.style.width = scrollPercent + '%';
   });
 
+  // ✅ Hero typing effect
   const heroTitle = document.querySelector('.hero-title');
   if (heroTitle) {
     const text = heroTitle.innerHTML;
@@ -171,22 +250,34 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(typeWriter, 500);
   }
 
+  // ✅ Particles background
   const heroSection = document.querySelector('.hero-section');
   if (heroSection) {
     const canvas = document.createElement('canvas');
-    canvas.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;opacity:0.1;';
+    canvas.style.cssText = `
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      opacity: 0.1;
+    `;
     heroSection.style.position = 'relative';
     heroSection.appendChild(canvas);
+
     const ctx = canvas.getContext('2d');
     let particles = [];
+
     const resizeCanvas = () => {
       canvas.width = heroSection.offsetWidth;
       canvas.height = heroSection.offsetHeight;
     };
+
     const createParticles = () => {
       particles = [];
-      const count = Math.floor((canvas.width * canvas.height) / 15000);
-      for (let i = 0; i < count; i++) {
+      const particleCount = Math.floor((canvas.width * canvas.height) / 15000);
+      for (let i = 0; i < particleCount; i++) {
         particles.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
@@ -196,20 +287,22 @@ document.addEventListener('DOMContentLoaded', function() {
         });
       }
     };
+
     const animateParticles = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.fillStyle = '#3b82f6';
-      particles.forEach(p => {
-        p.x += p.vx;
-        p.y += p.vy;
-        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+      particles.forEach(particle => {
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+        if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
+        if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
         ctx.fill();
       });
       requestAnimationFrame(animateParticles);
     };
+
     resizeCanvas();
     createParticles();
     animateParticles();
@@ -218,8 +311,10 @@ document.addEventListener('DOMContentLoaded', function() {
       createParticles();
     });
   }
+
 });
 
+// ✅ Toast function — outside is fine
 function showToast(message, type = 'success') {
   const toast = document.getElementById('toast');
   const toastMessage = document.getElementById('toast-message');
@@ -228,29 +323,3 @@ function showToast(message, type = 'success') {
   toast.classList.remove('hidden');
   setTimeout(() => toast.classList.add('hidden'), 4000);
 }
-
-document.getElementById('contact-form').addEventListener('submit', function(e) {
-  e.preventDefault();
-  const formData = new FormData(this);
-  const name = formData.get('name');
-  const email = formData.get('email');
-  const message = formData.get('message');
-  if (!name || !email || !message) {
-    showToast('Please fill in all fields', 'error');
-    return;
-  }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    showToast('Please enter a valid email address', 'error');
-    return;
-  }
-  const submitBtn = this.querySelector('.form-submit');
-  const originalText = submitBtn.textContent;
-  submitBtn.textContent = 'Sending...';
-  submitBtn.disabled = true;
-  setTimeout(() => {
-    showToast('Message sent successfully! Thank you for reaching out.', 'success');
-    this.reset();
-    submitBtn.textContent = originalText;
-    submitBtn.disabled = false;
-  }, 1000);
-});
