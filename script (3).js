@@ -1,11 +1,26 @@
-// ✅ FULL UPDATED script.js — final version
+// ✅ FINAL CLEAN WORKING script.js
 
 document.addEventListener('DOMContentLoaded', function() {
+  // ✅ Resume Download Button
+  const downloadBtn = document.getElementById('download-resume');
+  if (downloadBtn) {
+    downloadBtn.addEventListener('click', function() {
+      const link = document.createElement('a');
+      link.href = 'Aditya_Sahni_Resume.pdf';
+      link.download = 'Aditya_Sahni_Resume.pdf';
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      alert('Resume download started!');
+    });
+  }
+
+  // ✅ Mobile Menu Toggle
   const mobileMenuBtn = document.getElementById('mobile-menu-btn');
   const mobileMenu = document.getElementById('mobile-menu');
   const navigation = document.getElementById('navigation');
 
-  // Mobile menu toggle
   mobileMenuBtn.addEventListener('click', function() {
     mobileMenu.classList.toggle('hidden');
     const hamburgers = mobileMenuBtn.querySelectorAll('.hamburger');
@@ -21,7 +36,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // Close mobile menu when clicking on links
   const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
   mobileNavLinks.forEach(link => {
     link.addEventListener('click', function() {
@@ -34,14 +48,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // Navigation scroll effect
   window.addEventListener('scroll', function() {
-    navigation.style.background = window.scrollY > 50
-      ? 'rgba(255, 255, 255, 0.95)'
-      : 'rgba(255, 255, 255, 0.9)';
+    navigation.style.background = window.scrollY > 50 ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.9)';
   });
 
-  // Smooth scroll for nav links
   const navLinks = document.querySelectorAll('.nav-link, .mobile-nav-link');
   navLinks.forEach(link => {
     link.addEventListener('click', function(e) {
@@ -55,7 +65,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // Hero button smooth scroll
   const heroButtons = document.querySelectorAll('.hero-buttons a');
   heroButtons.forEach(button => {
     button.addEventListener('click', function(e) {
@@ -71,22 +80,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // ✅ Resume download inside DOMContentLoaded
-  const downloadBtn = document.getElementById('download-resume');
-  if (downloadBtn) {
-    downloadBtn.addEventListener('click', function() {
-      const link = document.createElement('a');
-      link.href = 'Aditya_Sahni_Resume.pdf';
-      link.download = 'Aditya_Sahni_Resume.pdf';
-      link.target = '_blank';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      showToast('Resume download started!', 'success');
-    });
-  }
-
-  // Section animations
   const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
@@ -147,22 +140,19 @@ document.addEventListener('DOMContentLoaded', function() {
     observer.observe(contactForm);
   }
 
-  // Card hover lift
   document.querySelectorAll('.project-card, .skill-category, .certification-card').forEach(card => {
     card.addEventListener('mouseenter', () => card.style.transform = 'translateY(-8px)');
     card.addEventListener('mouseleave', () => card.style.transform = 'translateY(0)');
   });
 
-  // Scroll progress bar
   const progressBar = document.createElement('div');
-  progressBar.style.cssText = `position: fixed; top: 0; left: 0; width: 0%; height: 3px; background: linear-gradient(90deg, #3b82f6, #1e40af); z-index: 9999; transition: width 0.1s ease;`;
+  progressBar.style.cssText = 'position:fixed;top:0;left:0;width:0%;height:3px;background:linear-gradient(90deg,#3b82f6,#1e40af);z-index:9999;transition:width 0.1s ease;';
   document.body.appendChild(progressBar);
   window.addEventListener('scroll', () => {
     const percent = (window.pageYOffset / (document.body.scrollHeight - window.innerHeight)) * 100;
     progressBar.style.width = percent + '%';
   });
 
-  // Hero typing
   const heroTitle = document.querySelector('.hero-title');
   if (heroTitle) {
     const text = heroTitle.innerHTML;
@@ -181,11 +171,10 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(typeWriter, 500);
   }
 
-  // Hero particles background
   const heroSection = document.querySelector('.hero-section');
   if (heroSection) {
     const canvas = document.createElement('canvas');
-    canvas.style.cssText = `position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0.1;`;
+    canvas.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;opacity:0.1;';
     heroSection.style.position = 'relative';
     heroSection.appendChild(canvas);
     const ctx = canvas.getContext('2d');
@@ -231,7 +220,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// ✅ Shared toast function
 function showToast(message, type = 'success') {
   const toast = document.getElementById('toast');
   const toastMessage = document.getElementById('toast-message');
