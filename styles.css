@@ -868,3 +868,14 @@ button {
   opacity: 1;
   transform: translateX(0);
 }
+.resume-preview {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.resume-preview iframe {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
